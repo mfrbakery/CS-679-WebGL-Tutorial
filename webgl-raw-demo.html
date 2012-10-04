@@ -19,9 +19,32 @@
     // 6) Create shaders
     // 7) Init shaders
     // 8) Draw stuff
+
+    // Initialize the 3D context and return it for later use
+    // @param canvas - the canvas on the page
+    // @return the initialized WebGL context
+    function initWebGl(canvas) {
+      var gl;
+      try {
+        // Just like before when you grabbed the '2D' context from the canvas, WebGL needs a special context to draw to
+        gl = canvas.getContext('experimental-webgl');
+        console.log("WebGL context successfully initialized!");
+      } catch (e) {
+        var errorMsg = "Error when trying to create WebGL context: " + e.toString();
+        alert(errorMsg);
+        throw Error(errorMsg);
+      }
+      return gl;
+    }
+
+    function start() {
+      var canvas = document.getElementById('the-canvas');
+      var gl = initWebGl(canvas);
+    }
+
   </script>
 </head>
-<body>
+<body onload="start()">
   <div id="canvas-container">
     <canvas id="the-canvas"></canvas>
   </div>
