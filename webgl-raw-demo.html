@@ -37,9 +37,18 @@
       return gl;
     }
 
+    // Initialize the viewport for the WebGL context
+    // @param gl - the WebGL context
+    // @param canvas - the canvas on the page
+    function initViewport(gl, canvas) {
+      // This says from (0,0) to the width & height of the canvas
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+
     function start() {
       var canvas = document.getElementById('the-canvas');
       var gl = initWebGl(canvas);
+      initViewport(gl, canvas);
     }
 
   </script>
