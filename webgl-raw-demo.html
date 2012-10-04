@@ -19,7 +19,7 @@
     // 6) Create shaders
     // 7) Init shaders
     // 8) Draw stuff
-
+    
     // Initialize the 3D context and return it for later use
     // @param canvas - the canvas on the page
     // @return the initialized WebGL context
@@ -45,10 +45,46 @@
       gl.viewport(0, 0, canvas.width, canvas.height);
     }
 
+    // Create the vertex buffer data for one square to be drawn.
+    // @param gl - the WebGL context
+    // @return the vertex data for the square
+    function createSquare(gl) {
+      var vertexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      var verts = [
+          0,  .5,  0.0,
+          -1,  .5,  0.0,
+          0, -.5,  0.0,
+          -1, -.5,  0.0
+      ];
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+      // Notice that we list how many vertices it has (nVerts)
+      var square = {buffer:vertexBuffer, vertSize:3, nVerts:4, primtype:gl.TRIANGLE_STRIP};
+      return square;
+    }
+
+    // Same idea as above, but now it's creating a triangle
+    // @param gl - the WebGL context
+    // @return the vertex data for the triangle
+    function createTriangle(gl) {
+      var vertexBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      var verts = [
+          .5,  .5,  0.0,
+          1, -.5,  0.0,
+          0, -.5,  0.0
+      ];
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(verts), gl.STATIC_DRAW);
+      var triangle = {buffer:vertexBuffer, vertSize:3, nVerts:3, primtype:gl.TRIANGLE_STRIP};
+      return triangle;
+    }
+
     function start() {
       var canvas = document.getElementById('the-canvas');
       var gl = initWebGl(canvas);
       initViewport(gl, canvas);
+      var square = createSquare(gl);
+      var triangle = createTriangle(gl);
     }
 
   </script>
