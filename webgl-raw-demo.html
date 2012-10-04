@@ -19,6 +19,10 @@
     // 6) Create shaders
     // 7) Init shaders
     // 8) Draw stuff
+
+    // These two global vars are matrices which are required for drawing
+    var modelViewMatrix,
+        projectionMatrix;
     
     // Initialize the 3D context and return it for later use
     // @param canvas - the canvas on the page
@@ -79,12 +83,53 @@
       return triangle;
     }
 
+    // Create 2 necessary matrices for drawing.
+    // The first is the ModelView matrix, which defines where something is positioned
+    // in 3D, relative to the camera. The second is the Projection matrix, which is 
+    // used by the shader to convert 3D coordinates in camera space to 2D coordinates
+    // of the viewport.
+    function initMatrices() {
+      // Before rendering, the canvas has to be told how to map from model space to screen space.
+      // When we set things up in the createSquare() method, we defined the vertices in model space.
+      // We have to transform those coordinates as follows:
+      // 
+      // Model coords --> World coords --> View coords --> Viewport coords
+      // 
+      // Model implies local coordinates describing the shape, whereas World coords take into 
+      // account all of the objects in the scene.
+      // 
+      // Transforms from Model --> World and World --> View are handled by the ModelView matrix (hence the name).
+      // 
+      // If you chop off the last column and bottom row, you have a 3x3 matrix
+      // which is used to define rotations about each of our axes (x, y, & z). 
+      // The values shown are considered 'default' and imply no rotations. 
+      // This is where the model coordinates are transformed to the world coordinate system.
+      // 
+      // We still need to transform to the camera or View space. This is done
+      // by adding back the last column and row, leaving us with a 4x4 matrix.
+      // The process is known as extending to homogenous coordinates - http://goo.gl/8jWik
+      // The -3 in the  bottom row means translate the square along the negative z axis
+      // by 3 units (move it away from the camera so it can be seen) 
+      modelViewMatrix = new Float32Array(
+          [1, 0, 0, 0,
+           0, 1, 0, 0,
+           0, 0, 1, 0,
+           0, 0, -3, 1]);
+      // These values define a 45-degree field of view perspective camera
+      projectionMatrix = new Float32Array(
+          [2.41421, 0, 0, 0,
+           0, 2.41421, 0, 0,
+           0, 0, -1.002002, -1,
+           0, 0, -0.2002002, 0]);
+    }
+
     function start() {
       var canvas = document.getElementById('the-canvas');
       var gl = initWebGl(canvas);
       initViewport(gl, canvas);
       var square = createSquare(gl);
       var triangle = createTriangle(gl);
+      initMatrices();
     }
 
   </script>
