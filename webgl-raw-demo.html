@@ -23,6 +23,24 @@
     // These two global vars are matrices which are required for drawing
     var modelViewMatrix,
         projectionMatrix;
+    // These two global vars contain the source for our two simple shaders
+    // This is NOT the only way to accomplish this, but it is quick
+    var vertexShaderSource =
+    "    attribute vec3 vertexPos;\n" +
+    "    uniform mat4 modelViewMatrix;\n" +
+    "    uniform mat4 projectionMatrix;\n" +
+    "    void main(void) {\n" +
+    "        // Return the transformed and projected vertex value\n" +
+    "        gl_Position = projectionMatrix * modelViewMatrix * \n" +
+    "               vec4(vertexPos, 1.0);\n" +
+    "    }\n";
+    var fragmentShaderSource =
+    "    void main(void) {\n" +
+    "    // Return the pixel color: always output red\n" +
+    "    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n" +
+    "    }\n";
+    // This is a global var which will hold the compiled code for our shader
+    var shaderProgram;
     
     // Initialize the 3D context and return it for later use
     // @param canvas - the canvas on the page
@@ -123,6 +141,32 @@
            0, 0, -0.2002002, 0]);
     }
 
+    // Create a shader, which defines how pixels for 3D objects 
+    // are drawn to the screen. There are usually 2 shaders:
+    // Vertex - transforms the object coordinates to 2D display space
+    // Fragment - generates the final color output for each pixel.
+    // @param gl - the WebGL context
+    // @param str - the source code of the shader
+    // @param type - the type of shader to be created
+    // @return - a compiled fragment or vertex shader
+    function createShader(gl, str, type) {
+      var shader;
+      if (type == "fragment") {
+        shader = gl.createShader(gl.FRAGMENT_SHADER);
+      } else if (type == "vertex") {
+        shader = gl.createShader(gl.VERTEX_SHADER);
+      } else {
+        return null;
+      }
+      gl.shaderSource(shader, str);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert(gl.getShaderInfoLog(shader));
+        return null;
+      }
+      return shader;
+    }
+              
     function start() {
       var canvas = document.getElementById('the-canvas');
       var gl = initWebGl(canvas);
