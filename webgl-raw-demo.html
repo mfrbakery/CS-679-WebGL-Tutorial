@@ -189,6 +189,32 @@
       }
     }
               
+    // The main function which draws a shape!
+    // @param gl - the WebGL context
+    // @param objs - an array of objects to be drawn
+    function draw(gl, objs) {
+      // clear the background (with black)
+      gl.clearColor(0.0, 0.0, 0.0, 1.0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      // For each object, follow this procedure:
+      // 1) Bind the buffer to be drawn
+      // 2) Bind the shader
+      // 3) Draw the arrays
+      for (var i = 0; i < objs.length; i++) {
+        var obj = objs[i];
+        // Tell the WebGL context which buffer is supposed to be drawn
+        gl.bindBuffer(gl.ARRAY_BUFFER, obj.buffer);
+        // Tell it which shader to use
+        gl.useProgram(shaderProgram);
+        // connect up the shader parameters: vertex position and projection/model matrices
+        gl.vertexAttribPointer(shaderVertexPositionAttribute, obj.vertSize, gl.FLOAT, false, 0, 0);
+        gl.uniformMatrix4fv(shaderProjectionMatrixUniform, false, projectionMatrix);
+        gl.uniformMatrix4fv(shaderModelViewMatrixUniform, false, modelViewMatrix);
+        // draw the object
+        gl.drawArrays(obj.primtype, 0, obj.nVerts);
+      }
+    }
+
     function start() {
       var canvas = document.getElementById('the-canvas');
       var gl = initWebGl(canvas);
@@ -197,6 +223,7 @@
       var triangle = createTriangle(gl);
       initMatrices();
       initShader(gl);
+      draw(gl, [square, triangle]);
     }
 
   </script>
