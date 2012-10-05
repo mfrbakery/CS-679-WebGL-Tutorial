@@ -166,6 +166,28 @@
       }
       return shader;
     }
+
+    // Initializes the shaders for drawing. Usually a library will take care
+    // of this for you.
+    // @param gl - the WebGL context
+    function initShader(gl) {
+      // load and compile the fragment and vertex shader
+      var fragmentShader = createShader(gl, fragmentShaderSource, "fragment");
+      var vertexShader = createShader(gl, vertexShaderSource, "vertex");
+      // link them together into a new program
+      shaderProgram = gl.createProgram();
+      gl.attachShader(shaderProgram, vertexShader);
+      gl.attachShader(shaderProgram, fragmentShader);
+      gl.linkProgram(shaderProgram);
+      // get pointers to the shader params
+      shaderVertexPositionAttribute = gl.getAttribLocation(shaderProgram, "vertexPos");
+      gl.enableVertexAttribArray(shaderVertexPositionAttribute);
+      shaderProjectionMatrixUniform = gl.getUniformLocation(shaderProgram, "projectionMatrix");
+      shaderModelViewMatrixUniform = gl.getUniformLocation(shaderProgram, "modelViewMatrix");
+      if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert("Could not initialise shaders");
+      }
+    }
               
     function start() {
       var canvas = document.getElementById('the-canvas');
@@ -174,6 +196,7 @@
       var square = createSquare(gl);
       var triangle = createTriangle(gl);
       initMatrices();
+      initShader(gl);
     }
 
   </script>
